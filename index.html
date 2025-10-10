@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Roue des Avis - La Cantoche</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #f9f9f9;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    #avisBtn {
+      display: inline-block;
+      padding: 15px 25px;
+      background-color: #ff7f50;
+      color: white;
+      font-weight: bold;
+      border-radius: 10px;
+      text-decoration: none;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    canvas {
+      margin-top: 10px;
+      background: white;
+      border: 5px solid #333;
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+
+    #spinBtn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 18px;
+      font-weight: bold;
+      background-color: #333;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #spinBtn:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
+    }
+
+    #spinBtn:active:not(:disabled) {
+      background-color: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎡 Roue des Avis - La Cantoche 🎉</h1>
+
+  <!-- Bouton vers avis Google -->
+  <a href="https://g.page/r/CefIMqGZfiXREAE/review" target="_blank" id="avisBtn">
+    ⭐ Laisser un avis et tenter votre chance
+  </a>
+
+  <!-- La roue -->
+  <canvas id="wheelCanvas" width="300" height="300"></canvas>
+  <button id="spinBtn" disabled>Tourner la roue</button>
+
+  <script>
+    const canvas = document.getElementById('wheelCanvas');
+    const ctx = canvas.getContext('2d');
+    const size = canvas.width;
+    const radius = size / 2;
+
+    // 🎁 Lots + probabilités (%)
+    const prizes = [
+      { label: "☕ Café offert", probability: 50, color: "#f94144" },
+      { label: "🍪 Cookie Nutella", probability: 5, color: "#f3722c" },
+      { label: "🥤 Boisson offerte", probability: 5, color: "#f9c74f" },
+      { label: "👧 Menu enfant offert", probability: 5, color: "#90be6d" },
+      { label: "😅 Pas de gain", probability: 35, color: "#577590" }
+    ];
+
+    // Calcul des angles selon les probabilités
+    let totalProbability = prizes.reduce((sum, p) => sum + p.probability, 0);
+    let startAngle = 0;
+
+    prizes.forEach(p => {
+      p.start = startAngle;
+      p.end = startAngle + (p.probability / totalProbability) * 2 * Math.PI;
+      startAngle = p.end;
+    });
+
+    let rotation = 0;
+    let spinning = false;
+
+    function drawWheel() {
+      ctx.clearRect(0, 0, size, size);
+      prizes.forEach(p => {
+        ctx.beginPath();
+        ctx.moveTo(radius, radius);
+        ctx.arc(radius, radius, radius, p.start + rotation, p.end + rotation);
+        ctx.closePath();
+        ctx.fillStyle = p.color;
+        ctx.fill();
+
+        // Texte
+        const midAngle = (p.start + p.end) / 2 + rotation;
+        ctx.save();
+        ctx.translate(radius, radius);
+        ctx.rotate(midAngle);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "white";
+        ctx.font = "bold 14px sans-serif";
+        ctx.fillText(p.label, radius - 10, 5);
+        ctx.restore();
+      });
+
+      // Flèche en haut
+      ctx.fillStyle = "#333";
+      ctx.beginPath();
+      ctx.moveTo(radius - 10, 0);
+      ctx.lineTo(radius + 10, 0);
+      ctx.lineTo(radius, 30);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    function spinWheel() {
+      if (spinning) return;
+      spinning = true;
+
+      const extraRotations = Math.random() * 3 + 5; // tours complets aléatoires
+      const finalAngle = Math.random() * 2 * Math.PI; // angle aléatoire final
+      const targetRotation = rotation + extraRotations * 2 * Math.PI + finalAngle;
+      const duration = 4000;
+      const start = performance.now();
+
+      function animate(time) {
+        const elapsed = time - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        rotation = rotation + (targetRotation - rotation) * easeOut;
+        drawWheel();
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          spinning = false;
+          announceResult();
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+
+    function announceResult() {
+      const finalAngle = (2 * Math.PI - (rotation % (2 * Math.PI))) % (2 * Math.PI);
+      const winner = prizes.find(p => finalAngle >= p.start && finalAngle < p.end);
+      alert("🎉 Résultat : " + (winner ? winner.label : "Erreur 😅"));
+    }
+
+    drawWheel();
+
+    // 🎯 Activation du bouton quand le client clique sur "laisser un avis"
+    document.getElementById('avisBtn').addEventListener('click', () => {
+      const spinBtn = document.getElementById('spinBtn');
+      spinBtn.disabled = false;
+    });
+
+    document.getElementById('spinBtn').addEventListener('click', spinWheel);
+  </script>
+
+</body>
+</html>

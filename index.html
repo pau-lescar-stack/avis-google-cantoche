@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr ">
+<html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>La Cantoche – Roue des cadeaux</title>
-
 <style>
 body {
   margin: 0;
@@ -34,7 +33,7 @@ header h1 {
 
 .instructions {
   text-align: center;
-  max-width: 320px;
+  max-width: 340px;
   font-size: 15px;
   line-height: 1.4;
   margin-bottom: 15px;
@@ -86,7 +85,6 @@ button:disabled {
 }
 </style>
 </head>
-
 <body>
 
 <header>
@@ -96,8 +94,9 @@ button:disabled {
 
 <div class="instructions">
   ⭐ <strong>Laissez-nous un avis Google</strong><br>
-  👀 Montrez-le à un membre de l’équipe<br>
-  🎡 Tournez la roue avec lui
+  👀 Montrez-le à un membre de l’équipe avant de tourner la roue<br>
+  🎡 Tournez la roue avec lui<br>
+  🎁 Les lots peuvent être immédiats ou à utiliser lors de votre prochaine visite
 </div>
 
 <div class="wheel-container">
@@ -105,7 +104,8 @@ button:disabled {
   <canvas id="wheel" width="500" height="500"></canvas>
 </div>
 
-<button id="spinBtn">Tourner la roue 🎡</button>
+<button id="confirmBtn">J'ai laissé mon avis</button>
+<button id="spinBtn" disabled>Tourner la roue 🎡</button>
 
 <div class="result" id="result"></div>
 
@@ -118,86 +118,95 @@ const segments = [
   { emoji: "🍪", label: "Cookie Nutella" },
   { emoji: "🥤", label: "Boisson offerte (hors alcool fort)" },
   { emoji: "🧒", label: "Menu enfant offert (prochaine visite)" },
-  { emoji: "😅", label: "Pas de gain cette fois-ci" }
+  { emoji: "😅", label: "Pas de gain" }
 ];
 
-// Probabilités réelles (non visibles)
-const weightedResults = [
-  ...Array(50).fill(0), // Café 50%
-  ...Array(5).fill(1),  // Cookie 5%
-  ...Array(5).fill(2),  // Boisson 5%
-  ...Array(5).fill(3),  // Menu enfant 5%
-  ...Array(35).fill(4)  // Pas de gain 35%
-];
-
-const colors = ["#C9A24D", "#D2691E", "#4FC3F7", "#81C784", "#9E9E9E"];
-const total = segments.length;
+// Crée 20 cases
+const total = 20;
+const colors = ["#C9A24D","#D2691E","#4FC3F7","#81C784","#9E9E9E"];
 const angle = (2 * Math.PI) / total;
+const wheelSegments = [];
 
-let currentRotation = 0;
-let spinning = false;
+// Répartir les probabilités dans 20 cases
+// Café 50% -> 10 cases, Cookie 5% ->1 case, Boisson 5% ->1 case, Menu enfant 5% ->1 case, Pas de gain 35% ->7 cases
+const segmentMap = [
+  0,0,0,0,0,0,0,0,0,0, // Café
+  1, // Cookie
+  2, // Boisson
+  3, // Menu enfant
+  4,4,4,4,4,4,4 // Pas de gain
+];
+for(let i=0;i<total;i++){
+  wheelSegments.push(segmentMap[i]);
+}
 
 function drawWheel() {
-  for (let i = 0; i < total; i++) {
+  for(let i=0;i<total;i++){
     ctx.beginPath();
-    ctx.moveTo(250, 250);
-    ctx.arc(250, 250, 250, angle * i, angle * (i + 1));
-    ctx.fillStyle = colors[i];
+    ctx.moveTo(250,250);
+    ctx.arc(250,250,250,angle*i,angle*(i+1));
+    ctx.fillStyle = colors[segments[wheelSegments[i]].emoji.charCodeAt(0)%colors.length];
     ctx.fill();
     ctx.save();
-    ctx.translate(250, 250);
-    ctx.rotate(angle * (i + 0.5));
-    ctx.textAlign = "right";
-    ctx.font = "40px Arial";
-    ctx.fillStyle = "#000";
-    ctx.fillText(segments[i].emoji, 220, 15);
+    ctx.translate(250,250);
+    ctx.rotate(angle*(i+0.5));
+    ctx.textAlign="right";
+    ctx.font="28px Arial";
+    ctx.fillStyle="#000";
+    ctx.fillText(segments[wheelSegments[i]].emoji,220,15);
     ctx.restore();
   }
 }
 
 drawWheel();
 
-document.getElementById("spinBtn").addEventListener("click", () => {
-  if (spinning) return;
-  spinning = true;
-  document.getElementById("result").textContent = "";
+const confirmBtn = document.getElementById("confirmBtn");
+const spinBtn = document.getElementById("spinBtn");
+const resultDiv = document.getElementById("result");
 
-  const chosenIndex = weightedResults[Math.floor(Math.random() * weightedResults.length)];
-  const targetAngle = (360 / total) * chosenIndex;
-  const spins = 5 * 360;
-  const finalAngle = spins + (360 - targetAngle - (360 / total) / 2);
+confirmBtn.addEventListener("click",()=>{
+  spinBtn.disabled=false;
+  confirmBtn.disabled=true;
+});
 
-  let start = currentRotation;
-  let end = finalAngle;
-  let duration = 4000;
-  let startTime = null;
+spinBtn.addEventListener("click",()=>{
+  if(spinBtn.disabled) return;
 
-  function animate(timestamp) {
-    if (!startTime) startTime = timestamp;
+  spinBtn.disabled=true;
+  resultDiv.textContent="";
+
+  const chosenIndex = wheelSegments[Math.floor(Math.random()*wheelSegments.length)];
+  const targetAngle = (360/total)*chosenIndex;
+  const spins = 5*360;
+  const finalAngle = spins + (360 - targetAngle - (360/total)/2);
+
+  let currentRotation=0;
+  const duration=4000;
+  let startTime=null;
+
+  function animate(timestamp){
+    if(!startTime) startTime=timestamp;
     const progress = timestamp - startTime;
-    const t = Math.min(progress / duration, 1);
-    const ease = 1 - Math.pow(1 - t, 3);
-    currentRotation = start + (end - start) * ease;
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.clearRect(0, 0, 500, 500);
-    ctx.translate(250, 250);
-    ctx.rotate((currentRotation * Math.PI) / 180);
-    ctx.translate(-250, -250);
+    const t = Math.min(progress/duration,1);
+    const ease = 1 - Math.pow(1-t,3);
+    currentRotation = finalAngle*ease;
+
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.clearRect(0,0,500,500);
+    ctx.translate(250,250);
+    ctx.rotate(currentRotation*Math.PI/180);
+    ctx.translate(-250,-250);
     drawWheel();
 
-    if (t < 1) {
+    if(t<1){
       requestAnimationFrame(animate);
-    } else {
-      spinning = false;
-      document.getElementById("result").textContent =
-        "🎉 Résultat : " + segments[chosenIndex].label;
+    }else{
+      resultDiv.textContent="🎉 Résultat : "+segments[chosenIndex].label;
     }
   }
-
   requestAnimationFrame(animate);
 });
 </script>
 
 </body>
 </html>
-

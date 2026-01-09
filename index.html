@@ -13,6 +13,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 10px;
 }
 
 header {
@@ -20,6 +21,7 @@ header {
   align-items: center;
   gap: 12px;
   margin: 20px 0;
+  flex-wrap: wrap;
 }
 
 header img {
@@ -27,14 +29,14 @@ header img {
 }
 
 header h1 {
-  font-size: 28px;
+  font-size: 24px;
   margin: 0;
 }
 
 .instructions {
   text-align: center;
-  max-width: 340px;
-  font-size: 15px;
+  max-width: 90%;
+  font-size: 14px;
   line-height: 1.4;
   margin-bottom: 15px;
 }
@@ -45,32 +47,43 @@ header h1 {
 
 .wheel-container {
   position: relative;
-  width: 320px;
-  height: 320px;
+  width: 90vw;        /* responsive mobile */
+  max-width: 400px;   /* limite desktop */
+  height: 90vw;
+  max-height: 400px;
+  border-radius: 50%;
+  overflow: hidden;
 }
 
 canvas {
   width: 100%;
   height: 100%;
+  display: block;
 }
 
 .arrow {
   position: absolute;
-  top: -12px;
+  top: -20px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 28px;
+  font-size: 32px;
+  z-index: 10;
+}
+
+button, a {
+  margin-top: 10px;
+  padding: 12px 20px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
 }
 
 button {
-  margin-top: 20px;
-  padding: 12px 24px;
-  font-size: 18px;
-  border-radius: 8px;
-  border: none;
   background: #f4c430;
   color: #000;
-  cursor: pointer;
 }
 
 button:disabled {
@@ -78,9 +91,14 @@ button:disabled {
   cursor: not-allowed;
 }
 
+a {
+  background:#4285F4;
+  color:white;
+}
+
 .result {
   margin-top: 20px;
-  font-size: 20px;
+  font-size: 18px;
   text-align: center;
 }
 </style>
@@ -99,9 +117,11 @@ button:disabled {
   🎁 Les lots peuvent être immédiats ou à utiliser lors de votre prochaine visite
 </div>
 
+<a href="https://www.google.com/maps/place/La+Cantoche+des+Grands+Enfants/@43.3167844,-0.4357252,17z/data=!4m8!3m7!1s0xd564ff89a35d0b7:0xd1257e99a132c8e7!8m2!3d43.3167805!4d-0.4331503!9m1!1b1!16s%2Fg%2F11np3gtrwy?entry=ttu&g_ep=EgoyMDI2MDEwNi4wIKXMDSoASAFQAw%3D%3D" target="_blank">⭐ Laisser un avis Google</a>
+
 <div class="wheel-container">
   <div class="arrow">⬇️</div>
-  <canvas id="wheel" width="500" height="500"></canvas>
+  <canvas id="wheel"></canvas>
 </div>
 
 <button id="confirmBtn">J'ai laissé mon avis</button>
@@ -113,51 +133,60 @@ button:disabled {
 const canvas = document.getElementById("wheel");
 const ctx = canvas.getContext("2d");
 
-const segments = [
-  { emoji: "☕", label: "Café offert" },
-  { emoji: "🍪", label: "Cookie Nutella" },
-  { emoji: "🥤", label: "Boisson offerte (hors alcool fort)" },
-  { emoji: "🧒", label: "Menu enfant offert (prochaine visite)" },
-  { emoji: "😅", label: "Pas de gain" }
-];
-
-// Crée 20 cases
-const total = 20;
-const colors = ["#C9A24D","#D2691E","#4FC3F7","#81C784","#9E9E9E"];
-const angle = (2 * Math.PI) / total;
-const wheelSegments = [];
-
-// Répartir les probabilités dans 20 cases
-// Café 50% -> 10 cases, Cookie 5% ->1 case, Boisson 5% ->1 case, Menu enfant 5% ->1 case, Pas de gain 35% ->7 cases
-const segmentMap = [
-  0,0,0,0,0,0,0,0,0,0, // Café
-  1, // Cookie
-  2, // Boisson
-  3, // Menu enfant
-  4,4,4,4,4,4,4 // Pas de gain
-];
-for(let i=0;i<total;i++){
-  wheelSegments.push(segmentMap[i]);
+// Ajuste la taille du canvas pour mobile et desktop
+function resizeCanvas() {
+  const size = canvas.parentElement.offsetWidth;
+  canvas.width = size;
+  canvas.height = size;
 }
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
 
-function drawWheel() {
-  for(let i=0;i<total;i++){
-    ctx.beginPath();
-    ctx.moveTo(250,250);
-    ctx.arc(250,250,250,angle*i,angle*(i+1));
-    ctx.fillStyle = colors[segments[wheelSegments[i]].emoji.charCodeAt(0)%colors.length];
-    ctx.fill();
-    ctx.save();
-    ctx.translate(250,250);
-    ctx.rotate(angle*(i+0.5));
-    ctx.textAlign="right";
-    ctx.font="28px Arial";
-    ctx.fillStyle="#000";
-    ctx.fillText(segments[wheelSegments[i]].emoji,220,15);
-    ctx.restore();
+// Segments et probabilités
+const segments = [
+  { label: "Café offert", weight: 50 },
+  { label: "Cookie Nutella", weight: 5 },
+  { label: "Boisson offerte", weight: 5 },
+  { label: "Menu enfant", weight: 5 },
+  { label: "Pas de gain", weight: 35 }
+];
+
+// Crée 20 segments selon les probabilités
+let wheelSegments = [];
+segments.forEach((seg, index) => {
+  const count = Math.round(seg.weight / 5); // 20 cases total
+  for(let i=0;i<count;i++) wheelSegments.push(index);
+});
+
+// Mélange les segments
+function shuffle(array) {
+  for(let i=array.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [array[i],array[j]]=[array[j],array[i]];
   }
 }
+shuffle(wheelSegments);
 
+const total = wheelSegments.length;
+const colors = ["#F44336","#FF9800","#FFEB3B","#4CAF50","#2196F3","#9C27B0","#E91E63","#00BCD4"];
+
+// Dessine la roue
+function drawWheel() {
+  const center = canvas.width/2;
+  const radius = center;
+  const angle = 2*Math.PI/total;
+
+  for(let i=0;i<total;i++){
+    ctx.beginPath();
+    ctx.moveTo(center,center);
+    ctx.arc(center,center,radius,angle*i,angle*(i+1));
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.fill();
+    ctx.strokeStyle = "#111";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+}
 drawWheel();
 
 const confirmBtn = document.getElementById("confirmBtn");
@@ -169,39 +198,54 @@ confirmBtn.addEventListener("click",()=>{
   confirmBtn.disabled=true;
 });
 
-spinBtn.addEventListener("click",()=>{
-  if(spinBtn.disabled) return;
+// Tirage selon poids
+function weightedRandom() {
+  const totalWeight = segments.reduce((sum,s)=>sum+s.weight,0);
+  let r = Math.random()*totalWeight;
+  for(let i=0;i<segments.length;i++){
+    if(r<segments[i].weight) return i;
+    r-=segments[i].weight;
+  }
+}
 
+spinBtn.addEventListener("click",()=>{
   spinBtn.disabled=true;
   resultDiv.textContent="";
 
-  const chosenIndex = wheelSegments[Math.floor(Math.random()*wheelSegments.length)];
+  const finalLot = weightedRandom();
+
+  // Indices sur la roue
+  const possibleIndexes = [];
+  wheelSegments.forEach((seg,i)=>{ if(seg===finalLot) possibleIndexes.push(i); });
+  const chosenIndex = possibleIndexes[Math.floor(Math.random()*possibleIndexes.length)];
+
+  // Rotation
   const targetAngle = (360/total)*chosenIndex;
   const spins = 5*360;
   const finalAngle = spins + (360 - targetAngle - (360/total)/2);
 
-  let currentRotation=0;
-  const duration=4000;
-  let startTime=null;
+  let currentRotation = 0;
+  const duration = 4000;
+  let startTime = null;
 
   function animate(timestamp){
     if(!startTime) startTime=timestamp;
-    const progress = timestamp - startTime;
+    const progress = timestamp-startTime;
     const t = Math.min(progress/duration,1);
     const ease = 1 - Math.pow(1-t,3);
     currentRotation = finalAngle*ease;
 
     ctx.setTransform(1,0,0,1,0,0);
-    ctx.clearRect(0,0,500,500);
-    ctx.translate(250,250);
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.translate(canvas.width/2,canvas.height/2);
     ctx.rotate(currentRotation*Math.PI/180);
-    ctx.translate(-250,-250);
+    ctx.translate(-canvas.width/2,-canvas.height/2);
     drawWheel();
 
     if(t<1){
       requestAnimationFrame(animate);
-    }else{
-      resultDiv.textContent="🎉 Résultat : "+segments[chosenIndex].label;
+    } else {
+      resultDiv.textContent="🎉 Résultat : "+segments[finalLot].label;
     }
   }
   requestAnimationFrame(animate);

@@ -47,8 +47,8 @@ header h1 {
 
 .wheel-container {
   position: relative;
-  width: 90vw;        /* responsive mobile */
-  max-width: 400px;   /* limite desktop */
+  width: 90vw;
+  max-width: 400px;
   height: 90vw;
   max-height: 400px;
   border-radius: 50%;
@@ -133,14 +133,21 @@ a {
 const canvas = document.getElementById("wheel");
 const ctx = canvas.getContext("2d");
 
-// Ajuste la taille du canvas pour mobile et desktop
-function resizeCanvas() {
-  const size = canvas.parentElement.offsetWidth;
+// ⚡ Initialisation stable du canvas
+function initCanvas() {
+  const size = Math.min(window.innerWidth*0.9, 400); // max 400px desktop
   canvas.width = size;
   canvas.height = size;
 }
-resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
+initCanvas();
+
+// Redessine seulement quand la fenêtre change, pas pendant le spin
+window.addEventListener("resize", ()=>{
+  const size = Math.min(window.innerWidth*0.9, 400);
+  canvas.width = size;
+  canvas.height = size;
+  drawWheel(); // redraw stable
+});
 
 // Segments et probabilités
 const segments = [
@@ -154,11 +161,11 @@ const segments = [
 // Crée 20 segments selon les probabilités
 let wheelSegments = [];
 segments.forEach((seg, index) => {
-  const count = Math.round(seg.weight / 5); // 20 cases total
+  const count = Math.round(seg.weight / 5); // 5% par segment
   for(let i=0;i<count;i++) wheelSegments.push(index);
 });
 
-// Mélange les segments
+// Mélange les segments pour surprise
 function shuffle(array) {
   for(let i=array.length-1;i>0;i--){
     const j=Math.floor(Math.random()*(i+1));
@@ -198,7 +205,7 @@ confirmBtn.addEventListener("click",()=>{
   confirmBtn.disabled=true;
 });
 
-// Tirage selon poids
+// Tirage pondéré
 function weightedRandom() {
   const totalWeight = segments.reduce((sum,s)=>sum+s.weight,0);
   let r = Math.random()*totalWeight;
@@ -214,12 +221,12 @@ spinBtn.addEventListener("click",()=>{
 
   const finalLot = weightedRandom();
 
-  // Indices sur la roue
+  // Indices possibles sur la roue
   const possibleIndexes = [];
   wheelSegments.forEach((seg,i)=>{ if(seg===finalLot) possibleIndexes.push(i); });
   const chosenIndex = possibleIndexes[Math.floor(Math.random()*possibleIndexes.length)];
 
-  // Rotation
+  // Calcul rotation
   const targetAngle = (360/total)*chosenIndex;
   const spins = 5*360;
   const finalAngle = spins + (360 - targetAngle - (360/total)/2);
@@ -235,6 +242,7 @@ spinBtn.addEventListener("click",()=>{
     const ease = 1 - Math.pow(1-t,3);
     currentRotation = finalAngle*ease;
 
+    // 🔹 Ne touche pas à la taille du canvas ici
     ctx.setTransform(1,0,0,1,0,0);
     ctx.clearRect(0,0,canvas.width,canvas.height);
     ctx.translate(canvas.width/2,canvas.height/2);

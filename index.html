@@ -6,258 +6,221 @@
 <title>La Cantoche – Roue des cadeaux</title>
 <style>
 body {
-  margin: 0;
+  margin:0;
   font-family: Arial, sans-serif;
-  background: #111;
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 10px;
+  background:#111;
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
 }
 
 header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 20px 0;
-  flex-wrap: wrap;
+  margin:15px 0;
+  text-align:center;
 }
-
 header img {
-  height: 60px;
+  height:70px;
 }
-
 header h1 {
-  font-size: 24px;
-  margin: 0;
+  margin:5px 0 0;
+  font-size:24px;
 }
 
 .instructions {
-  text-align: center;
-  max-width: 90%;
-  font-size: 14px;
-  line-height: 1.4;
-  margin-bottom: 15px;
+  text-align:center;
+  font-size:14px;
+  max-width:320px;
+  margin-bottom:10px;
 }
-
-.instructions strong {
-  color: #f4c430;
-}
+.instructions strong { color:#ffbf3f; }
 
 .wheel-container {
-  position: relative;
-  width: 90vw;
-  max-width: 400px;
-  height: 90vw;
-  max-height: 400px;
-  border-radius: 50%;
-  overflow: hidden;
+  position:relative;
+  width:280px;
+  height:280px;
 }
 
-canvas {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
+canvas { width:100%; height:100%; }
 
 .arrow {
-  position: absolute;
-  top: -20px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 32px;
-  z-index: 10;
+  position:absolute;
+  top:-12px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:26px;
 }
 
-button, a {
-  margin-top: 10px;
-  padding: 12px 20px;
-  font-size: 16px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-block;
-}
-
-button {
-  background: #f4c430;
-  color: #000;
+button, .link-avis {
+  margin-top:10px;
+  padding:10px 18px;
+  font-size:16px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
 }
 
 button:disabled {
-  background: #555;
-  cursor: not-allowed;
+  background:#555;
+  color:#999;
 }
 
-a {
-  background:#4285F4;
-  color:white;
+/* Lien pour avis Google */
+.link-avis {
+  background:#00205b;
+  color:#fff;
+  text-decoration:none;
+  display:inline-block;
 }
 
-.result {
-  margin-top: 20px;
-  font-size: 18px;
-  text-align: center;
+/* Popup */
+.popup {
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.7);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:1000;
+}
+.popup-content {
+  background:#fff;
+  color:#000;
+  padding:20px;
+  border-radius:12px;
+  width:80%;
+  max-width:300px;
+  text-align:center;
+}
+.popup-content h2 { margin-top:0; }
+.popup-content button {
+  margin-top:15px;
+  padding:10px 18px;
+  font-size:16px;
+  border:none;
+  border-radius:8px;
+  background:#ffbf3f;
+  cursor:pointer;
 }
 </style>
 </head>
 <body>
 
 <header>
-  <img src="https://i.postimg.cc/yYY3Tvqd/Logo-La-Cantoche-mono-Original-Plan-de-travail-1-copie.png" alt="Logo La Cantoche">
+  <img src="https://lacantochelescar.fr/wp-content/uploads/2021/06/LA-CANTOCHE-LOGO-HEADER.png" alt="La Cantoche">
   <h1>La Cantoche</h1>
 </header>
 
 <div class="instructions">
   ⭐ <strong>Laissez-nous un avis Google</strong><br>
-  👀 Montrez-le à un membre de l’équipe avant de tourner la roue<br>
+  👀 Montrez-le à un membre de l’équipe<br>
   🎡 Tournez la roue avec lui<br>
-  🎁 Les lots peuvent être immédiats ou à utiliser lors de votre prochaine visite
+  🎁 <strong>Les lots sont immédiats</strong>
 </div>
 
-<a href="https://www.google.com/maps/place/La+Cantoche+des+Grands+Enfants/@43.3167844,-0.4357252,17z/data=!4m8!3m7!1s0xd564ff89a35d0b7:0xd1257e99a132c8e7!8m2!3d43.3167805!4d-0.4331503!9m1!1b1!16s%2Fg%2F11np3gtrwy?entry=ttu&g_ep=EgoyMDI2MDEwNi4wIKXMDSoASAFQAw%3D%3D" target="_blank">⭐ Laisser un avis Google</a>
+<a href="https://www.google.fr/maps/place/La+Cantoche+des+Grands+Enfants/@43.3167844,-0.4357252,17z/data=!4m8!3m7!1s0xd564ff89a35d0b7:0xd1257e99a132c8e7!8m2!3d43.3167805!4d-0.4331503!9m1!1b1!16s%2Fg%2F11np3gtrwy?entry=ttu&g_ep=EgoyMDI2MDExMy4wIKXMDSoASAFQAw%3D%3D" class="link-avis" target="_blank">⭐ Laisser un avis Google</a>
 
 <div class="wheel-container">
   <div class="arrow">⬇️</div>
-  <canvas id="wheel"></canvas>
+  <canvas id="wheel" width="500" height="500"></canvas>
 </div>
 
 <button id="confirmBtn">J'ai laissé mon avis</button>
 <button id="spinBtn" disabled>Tourner la roue 🎡</button>
 
-<div class="result" id="result"></div>
+<!-- Popup -->
+<div class="popup" id="popup">
+  <div class="popup-content">
+    <h2>🎉 Résultat</h2>
+    <p id="popupResult"></p>
+    <button onclick="closePopup()">OK</button>
+  </div>
+</div>
 
 <script>
 const canvas = document.getElementById("wheel");
 const ctx = canvas.getContext("2d");
 
-// ⚡ Initialisation stable du canvas
-function initCanvas() {
-  const size = Math.min(window.innerWidth*0.9, 400); // max 400px desktop
-  canvas.width = size;
-  canvas.height = size;
-}
-initCanvas();
-
-// Redessine seulement quand la fenêtre change, pas pendant le spin
-window.addEventListener("resize", ()=>{
-  const size = Math.min(window.innerWidth*0.9, 400);
-  canvas.width = size;
-  canvas.height = size;
-  drawWheel(); // redraw stable
-});
-
-// Segments et probabilités
-const segments = [
-  { label: "Café offert", weight: 50 },
-  { label: "Cookie Nutella", weight: 5 },
-  { label: "Boisson offerte", weight: 5 },
-  { label: "Menu enfant", weight: 5 },
-  { label: "Pas de gain", weight: 35 }
+const rewards = [
+  "Café offert",
+  "Cookie Nutella",
+  "Boisson offerte",
+  "Menu enfant offert",
+  "Pas de gain"
 ];
 
-// Crée 20 segments selon les probabilités
-let wheelSegments = [];
-segments.forEach((seg, index) => {
-  const count = Math.round(seg.weight / 5); // 5% par segment
-  for(let i=0;i<count;i++) wheelSegments.push(index);
-});
+// Probabilités sur 20 cases
+const wheelSegments = [
+  0,0,0,0,0,0,0,0,0,0, // Café 50%
+  1, // Cookie 5%
+  2, // Boisson 5%
+  3, // Menu 5%
+  4,4,4,4,4,4,4 // Pas de gain 35%
+];
 
-// Mélange les segments pour surprise
-function shuffle(array) {
-  for(let i=array.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [array[i],array[j]]=[array[j],array[i]];
-  }
-}
-shuffle(wheelSegments);
+// Mélange pour que les cases ne soient pas regroupées
+wheelSegments.sort(()=>Math.random()-0.5);
 
 const total = wheelSegments.length;
-const colors = ["#F44336","#FF9800","#FFEB3B","#4CAF50","#2196F3","#9C27B0","#E91E63","#00BCD4"];
+const angle = (2*Math.PI)/total;
 
-// Dessine la roue
-function drawWheel() {
-  const center = canvas.width/2;
-  const radius = center;
-  const angle = 2*Math.PI/total;
-
+function drawWheel(){
   for(let i=0;i<total;i++){
     ctx.beginPath();
-    ctx.moveTo(center,center);
-    ctx.arc(center,center,radius,angle*i,angle*(i+1));
-    ctx.fillStyle = colors[i % colors.length];
+    ctx.moveTo(250,250);
+    ctx.arc(250,250,250,angle*i,angle*(i+1));
+    ctx.fillStyle = i%2===0 ? "#ffbf3f" : "#957241";
     ctx.fill();
-    ctx.strokeStyle = "#111";
-    ctx.lineWidth = 2;
-    ctx.stroke();
   }
 }
 drawWheel();
 
 const confirmBtn = document.getElementById("confirmBtn");
 const spinBtn = document.getElementById("spinBtn");
-const resultDiv = document.getElementById("result");
 
-confirmBtn.addEventListener("click",()=>{
+confirmBtn.onclick = ()=>{
   spinBtn.disabled=false;
   confirmBtn.disabled=true;
-});
+};
 
-// Tirage pondéré
-function weightedRandom() {
-  const totalWeight = segments.reduce((sum,s)=>sum+s.weight,0);
-  let r = Math.random()*totalWeight;
-  for(let i=0;i<segments.length;i++){
-    if(r<segments[i].weight) return i;
-    r-=segments[i].weight;
-  }
-}
-
-spinBtn.addEventListener("click",()=>{
+spinBtn.onclick = ()=>{
   spinBtn.disabled=true;
-  resultDiv.textContent="";
 
-  const finalLot = weightedRandom();
+  const index = Math.floor(Math.random()*total);
+  const reward = rewards[wheelSegments[index]];
 
-  // Indices possibles sur la roue
-  const possibleIndexes = [];
-  wheelSegments.forEach((seg,i)=>{ if(seg===finalLot) possibleIndexes.push(i); });
-  const chosenIndex = possibleIndexes[Math.floor(Math.random()*possibleIndexes.length)];
+  const target = (360/total)*index;
+  const final = 5*360 + (360-target);
 
-  // Calcul rotation
-  const targetAngle = (360/total)*chosenIndex;
-  const spins = 5*360;
-  const finalAngle = spins + (360 - targetAngle - (360/total)/2);
+  let start=null;
 
-  let currentRotation = 0;
-  const duration = 4000;
-  let startTime = null;
+  function anim(t){
+    if(!start) start=t;
+    const p = Math.min((t-start)/4000,1);
+    const ease = 1-Math.pow(1-p,3);
+    const rot = final*ease;
 
-  function animate(timestamp){
-    if(!startTime) startTime=timestamp;
-    const progress = timestamp-startTime;
-    const t = Math.min(progress/duration,1);
-    const ease = 1 - Math.pow(1-t,3);
-    currentRotation = finalAngle*ease;
-
-    // 🔹 Ne touche pas à la taille du canvas ici
     ctx.setTransform(1,0,0,1,0,0);
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    ctx.translate(canvas.width/2,canvas.height/2);
-    ctx.rotate(currentRotation*Math.PI/180);
-    ctx.translate(-canvas.width/2,-canvas.height/2);
+    ctx.clearRect(0,0,500,500);
+    ctx.translate(250,250);
+    ctx.rotate(rot*Math.PI/180);
+    ctx.translate(-250,-250);
     drawWheel();
 
-    if(t<1){
-      requestAnimationFrame(animate);
-    } else {
-      resultDiv.textContent="🎉 Résultat : "+segments[finalLot].label;
-    }
+    if(p<1) requestAnimationFrame(anim);
+    else showPopup(reward);
   }
-  requestAnimationFrame(animate);
-});
+  requestAnimationFrame(anim);
+};
+
+function showPopup(text){
+  document.getElementById("popupResult").textContent = text;
+  document.getElementById("popup").style.display="flex";
+}
+function closePopup(){
+  document.getElementById("popup").style.display="none";
+  confirmBtn.disabled=false;
+}
 </script>
 
 </body>

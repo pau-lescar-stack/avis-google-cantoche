@@ -6,7 +6,9 @@
 <title>La Cantoche – Roue des cadeaux</title>
 
 <style>
-*{box-sizing:border-box}
+*{
+  box-sizing:border-box;
+}
 
 body{
   margin:0;
@@ -57,6 +59,10 @@ header h1{
   font-weight:bold;
 }
 
+/* =========================
+   ROUE
+========================= */
+
 .wheel-container{
   position:relative;
   width:320px;
@@ -79,12 +85,39 @@ canvas{
   text-shadow:0 2px 4px #000;
 }
 
+/* =========================
+   AVERTISSEMENT
+========================= */
+
+.warning{
+  width:320px;
+  margin-top:14px;
+  margin-bottom:4px;
+  padding:10px 12px;
+  background:#3a1f1f;
+  border:2px solid #ffbf3f;
+  border-radius:10px;
+  color:#fff;
+  text-align:center;
+  font-size:12px;
+  line-height:1.4;
+}
+
+.warning strong{
+  color:#ffbf3f;
+  font-size:14px;
+}
+
+/* =========================
+   BOUTONS
+========================= */
+
 .buttons{
   display:flex;
   flex-direction:column;
   gap:10px;
   width:320px;
-  margin-top:14px;
+  margin-top:10px;
 }
 
 button{
@@ -111,6 +144,10 @@ button:disabled{
   background:#ffbf3f;
   color:#111;
 }
+
+/* =========================
+   POPUP
+========================= */
 
 .popup{
   position:fixed;
@@ -141,25 +178,36 @@ button:disabled{
   background:#ffbf3f;
   color:#111;
 }
+
 </style>
 </head>
 
 <body>
 
 <header>
+
   <img
     src="https://lacantochelescar.fr/wp-content/uploads/2021/06/LA-CANTOCHE-LOGO-HEADER.png"
     alt="La Cantoche"
   />
+
   <h1>Roue des cadeaux</h1>
+
 </header>
 
+
 <div class="instructions">
+
   ⭐ <strong>Laissez-nous un avis Google</strong><br />
+
   👀 Montrez-le à un membre de l'équipe<br />
+
   🎡 Tournez la roue avec lui<br />
+
   🎁 <strong>Les lots sont immédiats</strong>
+
 </div>
+
 
 <a
   class="link-avis"
@@ -169,119 +217,219 @@ button:disabled{
   ⭐ Laisser un avis Google
 </a>
 
+
+<!-- =========================
+     ROUE
+========================= -->
+
 <div class="wheel-container">
 
-  <!-- Flèche fixe -->
   <div class="arrow">▼</div>
 
-  <canvas id="wheel" width="700" height="700"></canvas>
+  <canvas
+    id="wheel"
+    width="700"
+    height="700">
+  </canvas>
 
 </div>
+
+
+<!-- =========================
+     AVERTISSEMENT
+========================= -->
+
+<div class="warning">
+
+  ⚠️ <strong>ATTENTION</strong><br />
+
+  LE LOT N'EST VALABLE QU'APRÈS<br />
+
+  VÉRIFICATION DE L'AVIS PAR UN SERVEUR.
+
+</div>
+
+
+<!-- =========================
+     BOUTONS
+========================= -->
 
 <div class="buttons">
-  <button id="confirmBtn">J'ai laissé mon avis</button>
-  <button id="spinBtn" disabled>Tourner la roue 🎡</button>
+
+  <button id="confirmBtn">
+    J'ai laissé mon avis
+  </button>
+
+  <button id="spinBtn" disabled>
+    Tourner la roue 🎡
+  </button>
+
 </div>
 
-<div class="popup" id="popup">
+
+<!-- =========================
+     POPUP
+========================= -->
+
+<div
+  class="popup"
+  id="popup">
+
   <div class="popup-content">
+
     <h2>🎉 Félicitations !</h2>
 
     <p
       id="popupResult"
-      style="font-size:20px;font-weight:bold;"
-    ></p>
+      style="font-size:20px;font-weight:bold;">
+    </p>
 
-    <button onclick="closePopup()">Super !</button>
+    <button onclick="closePopup()">
+      Super !
+    </button>
+
   </div>
+
 </div>
+
 
 <script>
 
-const canvas = document.getElementById("wheel");
-const ctx = canvas.getContext("2d");
+/* =====================================================
+   RÉCUPÉRATION DU CANVAS
+===================================================== */
+
+const canvas =
+  document.getElementById("wheel");
+
+const ctx =
+  canvas.getContext("2d");
 
 
-// ======================================================
-// LOTS
-// ======================================================
+/* =====================================================
+   LOTS
+===================================================== */
 
 const rewards = [
+
   "Café offert",
+
   "Boisson offerte",
+
   "Cookie Nutella",
+
   "Schoko-Bons",
+
   "Compliment du serveur",
+
   "Coupon de réduction",
+
   "Nettoyage des toilettes",
+
   "Snack sucré",
+
   "Pringles",
+
   "Dommage, c'est perdu"
+
 ];
 
 
-// ======================================================
-// COULEURS
-// ======================================================
+/* =====================================================
+   COULEURS
+===================================================== */
 
 const colors = [
+
   "#ffbf3f",
+
   "#957241"
+
 ];
 
 
-// ======================================================
-// CONFIGURATION DE LA ROUE
-// ======================================================
+/* =====================================================
+   CONFIGURATION
+===================================================== */
 
-const total = rewards.length;
+const total =
+  rewards.length;
 
-// Angle d'une case
-const angle = (2 * Math.PI) / total;
+const angle =
+  (2 * Math.PI) / total;
 
-// Angle du centre de la roue
-const center = 350;
+const center =
+  350;
 
-// Rayon
-const radius = 330;
+const radius =
+  330;
 
 
-// ======================================================
-// DESSIN DE LA ROUE
-// ======================================================
+/* =====================================================
+   DESSIN DE LA ROUE
+===================================================== */
 
 function drawWheel(rotation = 0){
 
-  // Reset complet du canvas
-  ctx.setTransform(1,0,0,1,0,0);
+  /*
+     On remet le canvas à zéro
+  */
 
-  ctx.clearRect(0,0,700,700);
+  ctx.setTransform(
+    1,0,0,1,0,0
+  );
 
-  // Centre de rotation
-  ctx.translate(center,center);
-
-  // Rotation de la roue
-  ctx.rotate(rotation);
-
-  // Retour au repère normal
-  ctx.translate(-center,-center);
+  ctx.clearRect(
+    0,
+    0,
+    700,
+    700
+  );
 
 
-  // --------------------------------------------------
-  // CASES
-  // --------------------------------------------------
+  /*
+     Centre de rotation
+  */
 
-  for(let i = 0; i < total; i++){
+  ctx.translate(
+    center,
+    center
+  );
+
+
+  /*
+     Rotation de la roue
+  */
+
+  ctx.rotate(
+    rotation
+  );
+
+
+  /*
+     Retour au repère normal
+  */
+
+  ctx.translate(
+    -center,
+    -center
+  );
+
+
+  /* ===============================================
+     DESSIN DES 10 CASES
+  =============================================== */
+
+  for(
+    let i = 0;
+    i < total;
+    i++
+  ){
 
     /*
-      IMPORTANT :
-
-      On commence chaque case à -90°.
-      Cela permet d'avoir le haut de la roue
-      exactement aligné avec la flèche.
-
-      Chaque case est ensuite centrée autour
-      de son propre angle.
+       La première case commence à -90°,
+       donc la roue est parfaitement alignée
+       avec la flèche.
     */
 
     const start =
@@ -294,7 +442,10 @@ function drawWheel(rotation = 0){
 
     ctx.beginPath();
 
-    ctx.moveTo(center,center);
+    ctx.moveTo(
+      center,
+      center
+    );
 
     ctx.arc(
       center,
@@ -306,34 +457,53 @@ function drawWheel(rotation = 0){
 
     ctx.closePath();
 
-    ctx.fillStyle = colors[i % 2];
+
+    ctx.fillStyle =
+      colors[i % 2];
 
     ctx.fill();
 
 
-    // --------------------------------------------------
-    // TEXTE
-    // --------------------------------------------------
+    /* =========================================
+       TEXTE
+    ========================================= */
 
     ctx.save();
 
-    // On se place au centre de la case
-    ctx.translate(center,center);
 
-    ctx.rotate(start + angle / 2);
-
-
-    ctx.textAlign = "right";
-    ctx.textBaseline = "middle";
-
-    ctx.fillStyle = "#111";
-
-    ctx.font = "bold 20px Arial";
+    ctx.translate(
+      center,
+      center
+    );
 
 
-    const text = rewards[i];
+    /*
+       Position du texte au centre de la case
+    */
 
-    const maxWidth = 210;
+    ctx.rotate(
+      start + angle / 2
+    );
+
+
+    ctx.textAlign =
+      "right";
+
+    ctx.textBaseline =
+      "middle";
+
+    ctx.fillStyle =
+      "#111";
+
+    ctx.font =
+      "bold 20px Arial";
+
+
+    const text =
+      rewards[i];
+
+    const maxWidth =
+      210;
 
 
     wrapText(
@@ -346,12 +516,13 @@ function drawWheel(rotation = 0){
 
 
     ctx.restore();
+
   }
 
 
-  // ==================================================
-  // CENTRE DE LA ROUE
-  // ==================================================
+  /* =================================================
+     CENTRE
+  ================================================= */
 
   ctx.beginPath();
 
@@ -363,16 +534,17 @@ function drawWheel(rotation = 0){
     Math.PI * 2
   );
 
-  ctx.fillStyle = "#00205b";
+  ctx.fillStyle =
+    "#00205b";
 
   ctx.fill();
 
 }
 
 
-// ======================================================
-// TEXTE SUR PLUSIEURS LIGNES
-// ======================================================
+/* =====================================================
+   TEXTE MULTILIGNE
+===================================================== */
 
 function wrapText(
   text,
@@ -382,11 +554,14 @@ function wrapText(
   lineHeight
 ){
 
-  const words = text.split(" ");
+  const words =
+    text.split(" ");
 
-  let line = "";
+  let line =
+    "";
 
-  let lines = [];
+  let lines =
+    [];
 
 
   for(
@@ -401,7 +576,9 @@ function wrapText(
       " ";
 
     const metrics =
-      ctx.measureText(testLine);
+      ctx.measureText(
+        testLine
+      );
 
 
     if(
@@ -446,7 +623,8 @@ function wrapText(
         x,
         y -
         offset +
-        idx * lineHeight
+        idx *
+        lineHeight
       );
 
     }
@@ -455,65 +633,82 @@ function wrapText(
 }
 
 
-// ======================================================
-// PREMIER AFFICHAGE
-// ======================================================
+/* =====================================================
+   AFFICHAGE INITIAL
+===================================================== */
 
 drawWheel();
 
 
-// ======================================================
-// BOUTONS
-// ======================================================
+/* =====================================================
+   BOUTONS
+===================================================== */
 
 const confirmBtn =
-  document.getElementById("confirmBtn");
+  document.getElementById(
+    "confirmBtn"
+  );
 
 const spinBtn =
-  document.getElementById("spinBtn");
+  document.getElementById(
+    "spinBtn"
+  );
 
+
+/* =====================================================
+   CONFIRMATION DE L'AVIS
+===================================================== */
 
 confirmBtn.addEventListener(
   "click",
   () => {
 
-    spinBtn.disabled = false;
+    spinBtn.disabled =
+      false;
 
-    confirmBtn.disabled = true;
+    confirmBtn.disabled =
+      true;
 
   }
 );
 
 
-// ======================================================
-// VARIABLE POUR EVITER LES DOUBLE CLICS
-// ======================================================
+/* =====================================================
+   EMPÊCHER DOUBLE CLIC
+===================================================== */
 
-let spinning = false;
+let spinning =
+  false;
 
 
-// ======================================================
-// LANCEMENT DE LA ROUE
-// ======================================================
+/* =====================================================
+   LANCEMENT DE LA ROUE
+===================================================== */
 
 spinBtn.addEventListener(
   "click",
   () => {
 
-    if(spinning) return;
-
-    spinning = true;
-
-    spinBtn.disabled = true;
+    if(spinning)
+      return;
 
 
-    // --------------------------------------------------
-    // CHOIX DU LOT
-    // --------------------------------------------------
+    spinning =
+      true;
+
+
+    spinBtn.disabled =
+      true;
+
+
+    /* ===============================================
+       CHOIX DU LOT
+    =============================================== */
 
     const index =
       Math.floor(
-        Math.random() * total
+        Math.random() *
+        total
       );
 
 
@@ -521,34 +716,23 @@ spinBtn.addEventListener(
       rewards[index];
 
 
-    // --------------------------------------------------
-    // CALCUL DU CENTRE DE LA CASE
-    // --------------------------------------------------
-
-    /*
-      La flèche est à -90°.
-
-      Chaque case fait 36°.
-
-      Le centre de la case choisie est :
-
-      -90° + index * 36° + 18°
-    */
+    /* ===============================================
+       CALCUL DU CENTRE DE LA CASE
+    =============================================== */
 
     const segmentCenter =
       -90 +
-      index * (360 / total) +
+      index *
+      (360 / total) +
       (360 / total) / 2;
 
 
     /*
-      On veut que ce centre arrive exactement
-      sous la flèche (-90°).
+       La flèche est à -90°.
 
-      Donc :
-
-      rotation =
-      -90 - segmentCenter
+       On calcule donc la rotation nécessaire
+       pour placer le centre de la case choisie
+       exactement sous la flèche.
     */
 
     let targetRotation =
@@ -556,59 +740,56 @@ spinBtn.addEventListener(
       segmentCenter;
 
 
-    // --------------------------------------------------
-    // NORMALISATION
-    // --------------------------------------------------
-
-    /*
-      On garde une rotation positive
-      pour avoir une animation naturelle.
-    */
+    /* ===============================================
+       NORMALISATION
+    =============================================== */
 
     targetRotation =
-      ((targetRotation % 360) + 360) % 360;
+      (
+        (targetRotation % 360)
+        + 360
+      ) % 360;
 
 
-    // --------------------------------------------------
-    // AJOUT DES TOURS COMPLETS
-    // --------------------------------------------------
+    /* ===============================================
+       NOMBRE DE TOURS
+    =============================================== */
 
-    const fullTurns = 6;
+    const fullTurns =
+      6;
+
 
     const finalRotation =
-      fullTurns * 360 +
+      fullTurns *
+      360 +
       targetRotation;
 
 
-    // --------------------------------------------------
-    // ANIMATION
-    // --------------------------------------------------
+    /* ===============================================
+       ANIMATION
+    =============================================== */
 
-    let start = null;
+    let start =
+      null;
 
 
     function animate(timestamp){
 
-      if(!start){
-
-        start = timestamp;
-
-      }
+      if(!start)
+        start =
+          timestamp;
 
 
       const progress =
         Math.min(
-          (timestamp - start) / 4500,
+          (timestamp - start) /
+          4500,
           1
         );
 
 
       /*
-        Easing :
-
-        départ rapide
-        ralentissement progressif
-        arrêt doux
+         Ralentissement progressif
       */
 
       const ease =
@@ -620,7 +801,8 @@ spinBtn.addEventListener(
 
 
       const rotationDeg =
-        finalRotation * ease;
+        finalRotation *
+        ease;
 
 
       drawWheel(
@@ -639,14 +821,7 @@ spinBtn.addEventListener(
       }else{
 
         /*
-          IMPORTANT :
-
-          On redessine UNE DERNIÈRE FOIS
-          exactement sur la position finale.
-
-          Cela évite toute différence entre
-          la dernière image de l'animation
-          et la position théorique.
+           Position finale exacte
         */
 
         drawWheel(
@@ -656,7 +831,8 @@ spinBtn.addEventListener(
         );
 
 
-        spinning = false;
+        spinning =
+          false;
 
 
         showPopup(
@@ -676,36 +852,40 @@ spinBtn.addEventListener(
 );
 
 
-// ======================================================
-// POPUP
-// ======================================================
+/* =====================================================
+   AFFICHAGE DU RÉSULTAT
+===================================================== */
 
 function showPopup(text){
 
   document.getElementById(
     "popupResult"
-  ).textContent = text;
+  ).textContent =
+    text;
 
 
   document.getElementById(
     "popup"
-  ).style.display = "flex";
+  ).style.display =
+    "flex";
 
 }
 
 
-// ======================================================
-// FERMER POPUP
-// ======================================================
+/* =====================================================
+   FERMETURE DU POPUP
+===================================================== */
 
 function closePopup(){
 
   document.getElementById(
     "popup"
-  ).style.display = "none";
+  ).style.display =
+    "none";
 
 
-  confirmBtn.disabled = false;
+  confirmBtn.disabled =
+    false;
 
 }
 

@@ -1,139 +1,175 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>La Cantoche – Roue des cadeaux</title>
+
 <style>
-body {
+*{box-sizing:border-box}
+body{
   margin:0;
-  font-family: Arial, sans-serif;
+  font-family:Arial,Helvetica,sans-serif;
   background:#111;
   color:#fff;
   display:flex;
   flex-direction:column;
   align-items:center;
+  padding:16px;
 }
 
-header {
-  margin:15px 0;
+header{
   text-align:center;
+  margin-bottom:12px;
 }
-header img {
+header img{
   height:70px;
+  max-width:90vw;
 }
-header h1 {
-  margin:5px 0 0;
+header h1{
+  margin:6px 0 0;
   font-size:24px;
 }
 
-.instructions {
+.instructions{
   text-align:center;
   font-size:14px;
-  max-width:320px;
-  margin-bottom:10px;
+  line-height:1.45;
+  max-width:340px;
+  margin-bottom:12px;
 }
-.instructions strong { color:#ffbf3f; }
+.instructions strong{color:#ffbf3f}
 
-.wheel-container {
+.link-avis{
+  display:inline-block;
+  margin-bottom:14px;
+  padding:10px 18px;
+  background:#00205b;
+  color:#fff;
+  text-decoration:none;
+  border-radius:10px;
+  font-weight:bold;
+}
+
+.wheel-container{
   position:relative;
-  width:280px;
-  height:280px;
+  width:320px;
+  height:320px;
 }
 
-canvas { width:100%; height:100%; }
+canvas{
+  width:100%;
+  height:100%;
+}
 
-.arrow {
+.arrow{
   position:absolute;
   top:-12px;
   left:50%;
   transform:translateX(-50%);
-  font-size:26px;
+  font-size:28px;
 }
 
-button, .link-avis {
-  margin-top:10px;
-  padding:10px 18px;
+.buttons{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  width:320px;
+  margin-top:14px;
+}
+
+button{
+  padding:12px 18px;
   font-size:16px;
   border:none;
-  border-radius:8px;
+  border-radius:10px;
   cursor:pointer;
+  font-weight:bold;
 }
 
-button:disabled {
+button:disabled{
   background:#555;
   color:#999;
+  cursor:not-allowed;
 }
 
-/* Lien pour avis Google */
-.link-avis {
-  background:#00205b;
+#confirmBtn{
+  background:#957241;
   color:#fff;
-  text-decoration:none;
-  display:inline-block;
 }
 
-/* Popup */
-.popup {
+#spinBtn{
+  background:#ffbf3f;
+  color:#111;
+}
+
+.popup{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,0.7);
+  background:rgba(0,0,0,.75);
   display:none;
   align-items:center;
   justify-content:center;
   z-index:1000;
 }
-.popup-content {
+
+.popup-content{
   background:#fff;
-  color:#000;
-  padding:20px;
-  border-radius:12px;
-  width:80%;
-  max-width:300px;
+  color:#111;
+  padding:22px;
+  border-radius:14px;
+  width:86%;
+  max-width:340px;
   text-align:center;
 }
-.popup-content h2 { margin-top:0; }
-.popup-content button {
-  margin-top:15px;
-  padding:10px 18px;
-  font-size:16px;
-  border:none;
-  border-radius:8px;
+
+.popup-content h2{
+  margin-top:0;
+}
+
+.popup-content button{
+  margin-top:14px;
   background:#ffbf3f;
-  cursor:pointer;
+  color:#111;
 }
 </style>
 </head>
+
 <body>
 
 <header>
-  <img src="https://lacantochelescar.fr/wp-content/uploads/2021/06/LA-CANTOCHE-LOGO-HEADER.png" alt="La Cantoche">
-  <h1>La Cantoche</h1>
+  <img src="https://lacantochelescar.fr/wp-content/uploads/2021/06/LA-CANTOCHE-LOGO-HEADER.png" alt="La Cantoche" />
+  <h1>Roue des cadeaux</h1>
 </header>
 
 <div class="instructions">
-  ⭐ <strong>Laissez-nous un avis Google</strong><br>
-  👀 Montrez-le à un membre de l’équipe<br>
-  🎡 Tournez la roue avec lui<br>
+  ⭐ <strong>Laissez-nous un avis Google</strong><br />
+  👀 Montrez-le à un membre de l'équipe<br />
+  🎡 Tournez la roue avec lui<br />
   🎁 <strong>Les lots sont immédiats</strong>
 </div>
 
-<a href="https://www.google.fr/maps/place/La+Cantoche+des+Grands+Enfants/@43.3167844,-0.4357252,17z/data=!4m8!3m7!1s0xd564ff89a35d0b7:0xd1257e99a132c8e7!8m2!3d43.3167805!4d-0.4331503!9m1!1b1!16s%2Fg%2F11np3gtrwy?entry=ttu&g_ep=EgoyMDI2MDExMy4wIKXMDSoASAFQAw%3D%3D" class="link-avis" target="_blank">⭐ Laisser un avis Google</a>
+<a class="link-avis"
+   href="https://www.google.fr/maps/place/La+Cantoche+des+Grands+Enfants/@43.3167844,-0.4357252,17z/data=!4m8!3m7!1s0xd564ff89a35d0b7:0xd1257e99a132c8e7!8m2!3d43.3167805!4d-0.4331503!9m1!1b1!16s%2Fg%2F11np3gtrwy?entry=ttu&g_ep=EgoyMDI2MDExMy4wIKXMDSoASAFQAw%3D%3D"
+   target="_blank">
+   ⭐ Laisser un avis Google
+</a>
 
 <div class="wheel-container">
-  <div class="arrow">⬇️</div>
-  <canvas id="wheel" width="500" height="500"></canvas>
+  <div class="arrow">▼</div>
+  <canvas id="wheel" width="700" height="700"></canvas>
 </div>
 
-<button id="confirmBtn">J'ai laissé mon avis</button>
-<button id="spinBtn" disabled>Tourner la roue 🎡</button>
+<div class="buttons">
+  <button id="confirmBtn">J'ai laissé mon avis</button>
+  <button id="spinBtn" disabled>Tourner la roue 🎡</button>
+</div>
 
-<!-- Popup -->
 <div class="popup" id="popup">
   <div class="popup-content">
-    <h2>🎉 Résultat</h2>
-    <p id="popupResult"></p>
-    <button onclick="closePopup()">OK</button>
+    <h2>🎉 Félicitations !</h2>
+    <p id="popupResult" style="font-size:20px;font-weight:bold;"></p>
+    <button onclick="closePopup()">Super !</button>
   </div>
 </div>
 
@@ -143,83 +179,143 @@ const ctx = canvas.getContext("2d");
 
 const rewards = [
   "Café offert",
-  "Cookie Nutella",
   "Boisson offerte",
-  "Menu enfant offert",
-  "Pas de gain"
+  "Cookie Nutella",
+  "Schoko-Bons",
+  "Compliment du serveur",
+  "Coupon de réduction",
+  "Nettoyage des toilettes",
+  "Snack sucré",
+  "Pringles",
+  "Dommage, c'est perdu"
 ];
 
-// Probabilités sur 20 cases
-const wheelSegments = [
-  0,0,0,0,0,0,0,0,0,0, // Café 50%
-  1, // Cookie 5%
-  2, // Boisson 5%
-  3, // Menu 5%
-  4,4,4,4,4,4,4 // Pas de gain 35%
+const colors = [
+  "#ffbf3f",
+  "#957241"
 ];
 
-// Mélange pour que les cases ne soient pas regroupées
-wheelSegments.sort(()=>Math.random()-0.5);
+const total = rewards.length;
+const angle = (2 * Math.PI) / total;
 
-const total = wheelSegments.length;
-const angle = (2*Math.PI)/total;
+function drawWheel(rotation = 0){
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.clearRect(0,0,700,700);
 
-function drawWheel(){
+  ctx.translate(350,350);
+  ctx.rotate(rotation);
+  ctx.translate(-350,-350);
+
   for(let i=0;i<total;i++){
+    const start = i * angle;
+    const end = start + angle;
+
     ctx.beginPath();
-    ctx.moveTo(250,250);
-    ctx.arc(250,250,250,angle*i,angle*(i+1));
-    ctx.fillStyle = i%2===0 ? "#ffbf3f" : "#957241";
+    ctx.moveTo(350,350);
+    ctx.arc(350,350,330,start,end);
+    ctx.closePath();
+    ctx.fillStyle = colors[i % 2];
     ctx.fill();
+
+    ctx.save();
+    ctx.translate(350,350);
+    ctx.rotate(start + angle/2);
+
+    ctx.textAlign = "right";
+    ctx.fillStyle = "#111";
+    ctx.font = "bold 20px Arial";
+
+    const text = rewards[i];
+    const maxWidth = 210;
+
+    wrapText(text, 245, 0, maxWidth, 22);
+
+    ctx.restore();
   }
+
+  ctx.beginPath();
+  ctx.arc(350,350,40,0,Math.PI*2);
+  ctx.fillStyle = "#00205b";
+  ctx.fill();
 }
+
+function wrapText(text, x, y, maxWidth, lineHeight){
+  const words = text.split(" ");
+  let line = "";
+  let lines = [];
+
+  for(let n=0;n<words.length;n++){
+    const testLine = line + words[n] + " ";
+    const metrics = ctx.measureText(testLine);
+    if(metrics.width > maxWidth && n > 0){
+      lines.push(line.trim());
+      line = words[n] + " ";
+    }else{
+      line = testLine;
+    }
+  }
+  lines.push(line.trim());
+
+  const offset = (lines.length - 1) * lineHeight / 2;
+  lines.forEach((l, idx) => {
+    ctx.fillText(l, x, y - offset + idx * lineHeight);
+  });
+}
+
 drawWheel();
 
 const confirmBtn = document.getElementById("confirmBtn");
 const spinBtn = document.getElementById("spinBtn");
 
-confirmBtn.onclick = ()=>{
-  spinBtn.disabled=false;
-  confirmBtn.disabled=true;
-};
+confirmBtn.addEventListener("click", ()=>{
+  spinBtn.disabled = false;
+  confirmBtn.disabled = true;
+});
 
-spinBtn.onclick = ()=>{
-  spinBtn.disabled=true;
+let spinning = false;
 
-  const index = Math.floor(Math.random()*total);
-  const reward = rewards[wheelSegments[index]];
+spinBtn.addEventListener("click", ()=>{
+  if(spinning) return;
+  spinning = true;
+  spinBtn.disabled = true;
 
-  const target = (360/total)*index;
-  const final = 5*360 + (360-target);
+  const index = Math.floor(Math.random() * total);
+  const reward = rewards[index];
 
-  let start=null;
+  const segmentCenter = index * (360/total) + (360/total)/2;
+  const targetRotation = 360 - segmentCenter;
+  const finalRotation = (6 * 360) + targetRotation;
 
-  function anim(t){
-    if(!start) start=t;
-    const p = Math.min((t-start)/4000,1);
-    const ease = 1-Math.pow(1-p,3);
-    const rot = final*ease;
+  let start = null;
 
-    ctx.setTransform(1,0,0,1,0,0);
-    ctx.clearRect(0,0,500,500);
-    ctx.translate(250,250);
-    ctx.rotate(rot*Math.PI/180);
-    ctx.translate(-250,-250);
-    drawWheel();
+  function animate(timestamp){
+    if(!start) start = timestamp;
 
-    if(p<1) requestAnimationFrame(anim);
-    else showPopup(reward);
+    const progress = Math.min((timestamp - start) / 4000, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+
+    const rotationDeg = finalRotation * ease;
+    drawWheel(rotationDeg * Math.PI / 180);
+
+    if(progress < 1){
+      requestAnimationFrame(animate);
+    }else{
+      spinning = false;
+      showPopup(reward);
+    }
   }
-  requestAnimationFrame(anim);
-};
+
+  requestAnimationFrame(animate);
+});
 
 function showPopup(text){
   document.getElementById("popupResult").textContent = text;
-  document.getElementById("popup").style.display="flex";
+  document.getElementById("popup").style.display = "flex";
 }
+
 function closePopup(){
-  document.getElementById("popup").style.display="none";
-  confirmBtn.disabled=false;
+  document.getElementById("popup").style.display = "none";
+  confirmBtn.disabled = false;
 }
 </script>
 
